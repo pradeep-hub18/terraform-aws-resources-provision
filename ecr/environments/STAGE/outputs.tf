@@ -27,3 +27,13 @@ output "full_access_policy_name" {
   description = "Name of the IAM policy granting full access to the managed ECR repositories."
   value       = module.ecr.full_access_policy_name
 }
+
+output "ci_push_policy_arn" {
+  description = "ARN of the least-privilege IAM policy for CI image push access."
+  value       = module.ecr.ci_push_policy_arn
+}
+
+output "ci_push_policy_name" {
+  description = "Name of the least-privilege IAM policy for CI image push access."
+  value       = module.ecr.ci_push_policy_name
+}

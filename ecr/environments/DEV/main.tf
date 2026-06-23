@@ -1,5 +1,5 @@
 module "ecr" {
-  source = "git::https://github.com/pradeep-hub18/my-terraform-modules.git//modules/ecr?ref=v1.5.4"
+  source = "git::https://github.com/pradeep-hub18/my-terraform-modules.git//modules/ecr?ref=main"
 
   project_name                          = var.project_name
   environment                           = var.environment
@@ -18,5 +18,9 @@ module "ecr" {
   full_access_iam_role_names            = var.full_access_iam_role_names
   full_access_iam_group_names           = var.full_access_iam_group_names
   repository_full_access_principal_arns = var.repository_full_access_principal_arns
+  create_ci_push_policy                 = var.create_ci_push_policy
+  ci_push_policy_name                   = var.ci_push_policy_name
+  ci_push_iam_role_names                = var.ci_push_iam_role_names
+  ci_push_iam_user_names                = var.ci_push_iam_user_names
   tags                                  = var.tags
 }

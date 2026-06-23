@@ -1,0 +1,78 @@
+name: Terraform Plan All
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Terraform environment to plan"
+        required: true
+        type: choice
+        options:
+          - DEV
+          - STAGE
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-plan-all-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  plan-all:
+    name: Plan all - ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+      TF_IN_AUTOMATION: "true"
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Configure AWS credentials with OIDC
+        if: env.AWS_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Configure AWS credentials with access keys
+        if: env.AWS_ROLE_ARN == ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: Terraform plan all components
+        run: |
+          set -euo pipefail
+          mkdir -p plan-artifacts
+          for component in networking ecr eks edge-routing eks-platform; do
+            workdir="$component/environments/${{ inputs.environment }}"
+            echo "Planning ${component}/${{ inputs.environment }}"
+            terraform -chdir="$workdir" init -backend-config="backend.hcl"
+            terraform -chdir="$workdir" validate
+            terraform -chdir="$workdir" plan -input=false -no-color -out=tfplan | tee "plan-artifacts/${component}-${{ inputs.environment }}-plan.txt"
+          done
+
+      - name: Upload plan outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.environment }}-terraform-plans
+          path: plan-artifacts/

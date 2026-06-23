@@ -7,8 +7,8 @@ repository_names = [
   "microapps/catalog-service-stage"
 ]
 
-image_tag_mutability       = "MUTABLE"
-force_delete               = true
+image_tag_mutability       = "IMMUTABLE"
+force_delete               = false
 scan_on_push               = true
 encryption_type            = "AES256"
 enable_lifecycle_policy    = true
@@ -25,6 +25,13 @@ full_access_iam_user_names = [
 full_access_iam_role_names            = []
 full_access_iam_group_names           = []
 repository_full_access_principal_arns = []
+
+create_ci_push_policy  = true
+ci_push_policy_name    = "microservices-demo-app-STAGE-ecr-ci-push"
+ci_push_iam_role_names = []
+ci_push_iam_user_names = [
+  "pradeep-IAM"
+]
 
 tags = {
   Owner      = "platform-team"

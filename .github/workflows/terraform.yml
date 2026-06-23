@@ -1,6 +1,12 @@
 name: Terraform AWS Resources
 
 on:
+  pull_request:
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - "**/*.hcl"
+      - ".github/workflows/terraform.yml"
   workflow_dispatch:
     inputs:
       component:
@@ -10,6 +16,8 @@ on:
         options:
           - networking
           - eks
+          - eks-platform
+          - edge-routing
           - nlb
           - ecr
       environment:
@@ -32,16 +40,63 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: terraform-${{ inputs.component }}-${{ inputs.environment }}
   cancel-in-progress: false
 
 jobs:
+  pr-validate:
+    name: PR Terraform validation
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        component:
+          - networking
+          - ecr
+          - eks
+          - edge-routing
+          - eks-platform
+          - nlb
+        environment:
+          - DEV
+          - STAGE
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ matrix.component }}/environments/${{ matrix.environment }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Terraform fmt
+        working-directory: .
+        run: terraform fmt -check -recursive
+
+      - name: Terraform init without backend
+        run: terraform init -backend=false
+
+      - name: Terraform validate
+        run: terraform validate
+
   terraform:
     name: Terraform ${{ inputs.action }} - ${{ inputs.component }} - ${{ inputs.environment }}
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    env:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
     defaults:
       run:
@@ -55,9 +110,17 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.0.11
+          terraform_version: 1.5.7
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials with OIDC
+        if: env.AWS_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Configure AWS credentials with access keys
+        if: env.AWS_ROLE_ARN == ''
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}

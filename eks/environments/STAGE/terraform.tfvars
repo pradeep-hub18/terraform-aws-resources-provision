@@ -9,20 +9,22 @@ node_min_size       = 2
 node_max_size       = 4
 node_disk_size      = 20
 
-endpoint_private_access = true
-endpoint_public_access  = true
+endpoint_private_access      = true
+endpoint_public_access       = true
+endpoint_public_access_cidrs = ["0.0.0.0/0"]
+enable_irsa                  = true
 
-enable_argocd        = true
+enable_argocd        = false
 argocd_namespace     = "argocd"
 argocd_release_name  = "argocd"
 argocd_chart_version = null
 argocd_values        = []
 
-enable_aws_load_balancer_controller = true
-enable_ebs_csi_driver               = true
-enable_ebs_gp3_storage_class        = true
-enable_istio                        = true
-enable_istio_ingress_gateway        = true
+enable_aws_load_balancer_controller = false
+enable_ebs_csi_driver               = false
+enable_ebs_gp3_storage_class        = false
+enable_istio                        = false
+enable_istio_ingress_gateway        = false
 istio_ingress_gateway_service_type  = "ClusterIP"
 
 networking_state_bucket = "pradeep-demo-network-terraform-state"

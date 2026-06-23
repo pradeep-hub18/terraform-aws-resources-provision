@@ -18,6 +18,11 @@ output "cluster_security_group_id" {
   value       = module.eks.cluster_security_group_id
 }
 
+output "node_security_group_id" {
+  description = "Security group ID created for the EKS managed node group."
+  value       = module.eks.node_security_group_id
+}
+
 output "cluster_iam_role_arn" {
   description = "ARN of the IAM role used by the EKS control plane."
   value       = module.eks.cluster_iam_role_arn
@@ -38,9 +43,29 @@ output "node_group_iam_role_arn" {
   value       = module.eks.node_group_iam_role_arn
 }
 
+output "node_group_iam_role_name" {
+  description = "Name of the IAM role used by the EKS managed node group."
+  value       = module.eks.node_group_iam_role_name
+}
+
 output "node_group_autoscaling_group_names" {
   description = "Auto Scaling Group names backing the EKS managed node group."
   value       = module.eks.node_group_autoscaling_group_names
+}
+
+output "oidc_provider_arn" {
+  description = "IAM OIDC provider ARN for the EKS cluster."
+  value       = module.eks.oidc_provider_arn
+}
+
+output "oidc_provider_url" {
+  description = "OIDC issuer URL for the EKS cluster."
+  value       = module.eks.oidc_provider_url
+}
+
+output "oidc_provider_host" {
+  description = "OIDC issuer hostpath without the https:// prefix."
+  value       = module.eks.oidc_provider_host
 }
 
 output "argocd_namespace" {

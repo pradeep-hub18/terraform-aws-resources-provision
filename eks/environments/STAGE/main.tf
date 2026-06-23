@@ -9,7 +9,7 @@ data "terraform_remote_state" "networking" {
 }
 
 module "eks" {
-  source = "git::https://github.com/pradeep-hub18/my-terraform-modules.git//modules/eks?ref=v1.5.3"
+  source = "git::https://github.com/pradeep-hub18/my-terraform-modules.git//modules/eks?ref=main"
 
   project_name                        = var.project_name
   environment                         = var.environment
@@ -18,6 +18,8 @@ module "eks" {
   cluster_version                     = var.cluster_version
   endpoint_private_access             = var.endpoint_private_access
   endpoint_public_access              = var.endpoint_public_access
+  endpoint_public_access_cidrs        = var.endpoint_public_access_cidrs
+  enable_irsa                         = var.enable_irsa
   node_instance_types                 = var.node_instance_types
   node_desired_size                   = var.node_desired_size
   node_min_size                       = var.node_min_size

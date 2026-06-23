@@ -33,12 +33,37 @@ output "nat_gateway_id" {
   value       = module.networking.nat_gateway_id
 }
 
+output "nat_gateway_ids" {
+  description = "IDs of the NAT gateways."
+  value       = module.networking.nat_gateway_ids
+}
+
 output "public_route_table_id" {
   description = "ID of the public route table."
   value       = module.networking.public_route_table_id
 }
 
+output "public_route_table_ids" {
+  description = "IDs of the public route tables."
+  value       = module.networking.public_route_table_ids
+}
+
 output "private_route_table_id" {
   description = "ID of the private route table."
   value       = module.networking.private_route_table_id
+}
+
+output "private_route_table_ids" {
+  description = "IDs of the private route tables."
+  value       = module.networking.private_route_table_ids
+}
+
+output "interface_vpc_endpoint_ids" {
+  description = "Interface VPC endpoint IDs keyed by service suffix."
+  value       = module.networking.interface_vpc_endpoint_ids
+}
+
+output "s3_vpc_endpoint_id" {
+  description = "S3 gateway VPC endpoint ID."
+  value       = module.networking.s3_vpc_endpoint_id
 }

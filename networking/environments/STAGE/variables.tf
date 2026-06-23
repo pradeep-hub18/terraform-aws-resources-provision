@@ -33,6 +33,24 @@ variable "availability_zones" {
   type        = list(string)
 }
 
+variable "enable_nat_gateway" {
+  description = "Whether private subnets should route outbound internet traffic through NAT gateways."
+  type        = bool
+  default     = true
+}
+
+variable "single_nat_gateway" {
+  description = "Whether to use one shared NAT gateway. Set false for one NAT gateway per private subnet/AZ."
+  type        = bool
+  default     = false
+}
+
+variable "enable_vpc_endpoints" {
+  description = "Whether to create private AWS service VPC endpoints."
+  type        = bool
+  default     = true
+}
+
 variable "tags" {
   description = "Additional tags to apply to all resources."
   type        = map(string)

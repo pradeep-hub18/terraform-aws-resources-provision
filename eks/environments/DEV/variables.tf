@@ -61,6 +61,18 @@ variable "endpoint_public_access" {
   default     = true
 }
 
+variable "endpoint_public_access_cidrs" {
+  description = "CIDR blocks allowed to reach the public EKS API endpoint."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "enable_irsa" {
+  description = "Whether to create the EKS OIDC provider for IRSA roles."
+  type        = bool
+  default     = true
+}
+
 variable "enable_argocd" {
   description = "Whether to install Argo CD into the EKS cluster."
   type        = bool
